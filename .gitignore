@@ -70,7 +70,6 @@ libfsemu/obj
 libfsemu/out
 core
 /libs/
-
 /Makefile
 /Makefile.in
 /aclocal.m4
@@ -88,6 +87,7 @@ core
 /config.sub
 .deps
 .dirstamp
-
 /Makefile.ac
 /Makefile.ac.in
+.cproject
+.project
