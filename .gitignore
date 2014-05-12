@@ -91,3 +91,6 @@ core
 /Makefile.ac.in
 .cproject
 .project
+memory-manager/.depend
+memory-manager/client
+memory-manager/server

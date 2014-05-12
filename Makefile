@@ -8,7 +8,7 @@ else
     libfsemu_dir := "libfsemu"
 endif
 
-all: fs-uae fs-uae-device-helper mo
+all: fs-uae fs-uae-device-helper mo memory-manager
 
 cppflags = -DFSEMU -DFSUAE -D_FILE_OFFSET_BITS=64
 
@@ -466,7 +466,6 @@ fs-uae-device-helper: libfsemu-target $(device_helper_objects)
 	rm -f fs-uae-device-helper
 	$(cxx) $(ldflags) $(device_helper_objects) $(libs) -o fs-uae-device-helper
 
-
 build_dir := "."
 dist_name = fs-uae-$(version)
 dist_dir := $(build_dir)/$(dist_name)
@@ -672,10 +671,16 @@ debversion := $(shell date +"%s")
 
 include targets.mk
 
+memory-manager:
+	$(make) -C memory-manager all
+
+memory-manager-clean:
+	$(make) -C memory-manager clean
+
 clean-dist:
 	rm -Rf build dist fs-uae-[0-9]* fs-uae_*
 
-clean:
+clean: memory-manager-clean
 	$(make) -C $(libfsemu_dir) clean
 	rm -f gensrc/build68k gensrc/genblitter gensrc/gencpu gensrc/genlinetoscr
 	rm -f obj/*.o obj/*.a fs-uae fs-uae.exe fs-uae-device-helper fs-uae-device-helper.exe

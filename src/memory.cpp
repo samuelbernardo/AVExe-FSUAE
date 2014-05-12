@@ -100,7 +100,7 @@ address (in which case the value in this array is even), OR it holds the
 same value as mem_banks, for those banks that have baseaddr==0. In that
 case, bit 0 is set (the memory access routines will take care of it).  */
 
-uae_u8 *baseaddr[MEMORY_BANKS];
+//uae_u8 *baseaddr[MEMORY_BANKS];
 
 #ifdef NO_INLINE_MEMORY_ACCESS
 __inline__ uae_u32 longget (uaecptr addr)
@@ -675,7 +675,7 @@ void (REGPARAM2 *chipmem_bput_indirect)(uaecptr, uae_u32);
 int (REGPARAM2 *chipmem_check_indirect)(uaecptr, uae_u32);
 uae_u8 *(REGPARAM2 *chipmem_xlate_indirect)(uaecptr);
 
-static void chipmem_setindirect (void)
+static void chipmem_setindirect (void) //TODO looks important
 {
 	if (currprefs.z3chipmem_size) {
 		chipmem_lget_indirect = chipmem_lget_bigmem;
@@ -2040,7 +2040,7 @@ static void delete_shmmaps (uae_u32 start, uae_u32 size)
 	if (!needmman ())
 		return;
 
-	while (size) {
+	while (size) {//TODO membank
 		uae_u8 *base = mem_banks[bankindex (start)]->baseaddr;
 		if (base) {
 			shmpiece *x;
@@ -2178,7 +2178,7 @@ uae_u8 *mapped_malloc (size_t s, const TCHAR *file)
 #endif
 
 static void init_mem_banks (void)
-{
+{//TODO membank
 	int i;
 
 	for (i = 0; i < MEMORY_BANKS; i++)
@@ -2548,7 +2548,7 @@ void memory_reset (void)
 
 	gayleorfatgary = (currprefs.chipset_mask & CSMASK_AGA) || currprefs.cs_pcmcia || currprefs.cs_ide > 0 || currprefs.cs_mbdmac;
 
-	init_mem_banks ();
+	init_mem_banks ();//TODO membank
 	allocate_memory ();
 	chipmem_setindirect ();
 
@@ -2802,7 +2802,7 @@ void memory_reset (void)
 
 void memory_init (void)
 {
-	init_mem_banks ();
+	init_mem_banks ();//TODO membank
 	virtualdevice_init ();
 
 	allocated_chipmem = 0;

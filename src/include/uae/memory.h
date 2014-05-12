@@ -6,7 +6,7 @@
 * Copyright 1995 Bernd Schmidt
 */
 
-extern void memory_reset (void);
+extern void memory_reset (void); //TODO memory.cpp
 extern void a1000_reset (void);
 
 #ifdef JIT
@@ -141,21 +141,21 @@ extern uae_u16 last_custom_value1;
 
 /* Default memory access functions */
 
-extern int REGPARAM3 default_check(uaecptr addr, uae_u32 size) REGPARAM;
-extern uae_u8 *REGPARAM3 default_xlate(uaecptr addr) REGPARAM;
+extern int REGPARAM3 default_check(uaecptr addr, uae_u32 size) REGPARAM; //TODO memory.cpp
+extern uae_u8 *REGPARAM3 default_xlate(uaecptr addr) REGPARAM; //TODO memory.cpp
 /* 680x0 opcode fetches */
-extern uae_u32 REGPARAM3 dummy_lgeti (uaecptr addr) REGPARAM;
-extern uae_u32 REGPARAM3 dummy_wgeti (uaecptr addr) REGPARAM;
+extern uae_u32 REGPARAM3 dummy_lgeti (uaecptr addr) REGPARAM; //TODO memory.cpp
+extern uae_u32 REGPARAM3 dummy_wgeti (uaecptr addr) REGPARAM; //TODO memory.cpp
 
-#define bankindex(addr) (((uaecptr)(addr)) >> 16)
+#define bankindex(addr) (((uaecptr)(addr)) >> 16) //TODO may be important
 
-extern addrbank *mem_banks[MEMORY_BANKS];
+extern addrbank *mem_banks[MEMORY_BANKS];//TODO important
 
 #ifdef JIT
 extern uae_u8 *baseaddr[MEMORY_BANKS];
 #endif
 
-#define get_mem_bank(addr) (*mem_banks[bankindex(addr)])
+#define get_mem_bank(addr) (*mem_banks[bankindex(addr)]) //TODO this is how memory access seems to be done
 
 #ifdef JIT
 #define put_mem_bank(addr, b, realstart) do { \
@@ -167,16 +167,16 @@ extern uae_u8 *baseaddr[MEMORY_BANKS];
 } while (0)
 #else
 #define put_mem_bank(addr, b, realstart) \
-	(mem_banks[bankindex(addr)] = (b));
+	(mem_banks[bankindex(addr)] = (b)); //TODO mem write
 #endif
 
-extern void memory_init (void);
-extern void memory_cleanup (void);
-extern void map_banks (addrbank *bank, int first, int count, int realsize);
-extern void map_overlay (int chip);
-extern void memory_hardreset (int);
-extern void memory_clear (void);
-extern void free_fastmemory (void);
+extern void memory_init (void); //TODO memory.cpp
+extern void memory_cleanup (void); //TODO memory.cpp
+extern void map_banks (addrbank *bank, int first, int count, int realsize); //TODO memory.cpp
+extern void map_overlay (int chip); //TODO memory.cpp
+extern void memory_hardreset (int); //TODO memory.cpp
+extern void memory_clear (void); //TODO memory.cpp
+extern void free_fastmemory (void); //TODO memory.cpp
 
 #define longget(addr) (call_mem_get_func(get_mem_bank(addr).lget, addr))
 #define wordget(addr) (call_mem_get_func(get_mem_bank(addr).wget, addr))
@@ -298,23 +298,23 @@ STATIC_INLINE int valid_address (uaecptr addr, uae_u32 size)
 	return get_mem_bank (addr).check(addr, size);
 }
 
-extern int addr_valid (const TCHAR*, uaecptr,uae_u32);
+extern int addr_valid (const TCHAR*, uaecptr,uae_u32); //TODO memory.cpp
 
 /* For faster access in custom chip emulation.  */
-extern void REGPARAM3 chipmem_lput (uaecptr, uae_u32) REGPARAM;
-extern void REGPARAM3 chipmem_wput (uaecptr, uae_u32) REGPARAM;
-extern void REGPARAM3 chipmem_bput (uaecptr, uae_u32) REGPARAM;
+extern void REGPARAM3 chipmem_lput (uaecptr, uae_u32) REGPARAM; //TODO memory.cpp
+extern void REGPARAM3 chipmem_wput (uaecptr, uae_u32) REGPARAM; //TODO memory.cpp
+extern void REGPARAM3 chipmem_bput (uaecptr, uae_u32) REGPARAM; //TODO memory.cpp
 
-extern uae_u32 REGPARAM3 chipmem_agnus_wget (uaecptr) REGPARAM;
-extern void REGPARAM3 chipmem_agnus_wput (uaecptr, uae_u32) REGPARAM;
+extern uae_u32 REGPARAM3 chipmem_agnus_wget (uaecptr) REGPARAM; //TODO memory.cpp
+extern void REGPARAM3 chipmem_agnus_wput (uaecptr, uae_u32) REGPARAM; //TODO memory.cpp
 
 extern uae_u32 chipmem_mask, kickmem_mask;
 extern uae_u8 *kickmemory;
 extern addrbank dummy_bank;
 
 /* 68020+ Chip RAM DMA contention emulation */
-extern void REGPARAM3 chipmem_bput_c2 (uaecptr, uae_u32) REGPARAM;
-
+extern void REGPARAM3 chipmem_bput_c2 (uaecptr, uae_u32) REGPARAM; //TODO memory.cpp
+//TODO memory.cpp
 extern uae_u32 (REGPARAM3 *chipmem_lget_indirect)(uaecptr) REGPARAM;
 extern uae_u32 (REGPARAM3 *chipmem_wget_indirect)(uaecptr) REGPARAM;
 extern uae_u32 (REGPARAM3 *chipmem_bget_indirect)(uaecptr) REGPARAM;
@@ -339,22 +339,22 @@ extern shmpiece *shm_start;
 
 #endif
 
-extern uae_u8 *mapped_malloc (size_t, const TCHAR*);
-extern void mapped_free (uae_u8 *);
+extern uae_u8 *mapped_malloc (size_t, const TCHAR*); //TODO memory.cpp
+extern void mapped_free (uae_u8 *); //TODO memory.cpp
 extern void clearexec (void);
 extern void mapkick (void);
 extern void a3000_fakekick (int);
 
-extern uaecptr strcpyha_safe (uaecptr dst, const uae_char *src);
-extern uae_char *strcpyah_safe (uae_char *dst, uaecptr src, int maxsize);
-extern void memcpyha_safe (uaecptr dst, const uae_u8 *src, int size);
-extern void memcpyha (uaecptr dst, const uae_u8 *src, int size);
-extern void memcpyah_safe (uae_u8 *dst, uaecptr src, int size);
-extern void memcpyah (uae_u8 *dst, uaecptr src, int size);
+extern uaecptr strcpyha_safe (uaecptr dst, const uae_char *src); //TODO memory.cpp
+extern uae_char *strcpyah_safe (uae_char *dst, uaecptr src, int maxsize); //TODO memory.cpp
+extern void memcpyha_safe (uaecptr dst, const uae_u8 *src, int size); //TODO memory.cpp
+extern void memcpyha (uaecptr dst, const uae_u8 *src, int size); //TODO memory.cpp
+extern void memcpyah_safe (uae_u8 *dst, uaecptr src, int size); //TODO memory.cpp
+extern void memcpyah (uae_u8 *dst, uaecptr src, int size); //TODO memory.cpp
 
-extern uae_s32 getz2size (struct uae_prefs *p);
-extern ULONG getz2endaddr (void);
+extern uae_s32 getz2size (struct uae_prefs *p); //TODO memory.cpp
+extern ULONG getz2endaddr (void); //TODO memory.cpp
 
 #ifdef FSUAE
-int uae_get_memory_checksum();
+int uae_get_memory_checksum(); //TODO memory.cpp
 #endif
