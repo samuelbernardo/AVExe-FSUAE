@@ -91,7 +91,7 @@ static bool bogomem_aliasing;
 
 /* The address space setting used during the last reset.  */
 static bool last_address_space_24;
-
+//TODO WRAP THIS!! somehow...
 addrbank *mem_banks[MEMORY_BANKS];
 
 /* This has two functions. It either holds a host address that, when added
@@ -218,6 +218,7 @@ static uae_u32 REGPARAM2 dummy_lget (uaecptr addr)
 		dummylog (0, addr, 4, 0, 0);
 	return dummy_get (addr, 4);
 }
+//TODO WRAP THIS!!
 uae_u32 REGPARAM2 dummy_lgeti (uaecptr addr)
 {
 #ifdef JIT
@@ -237,6 +238,7 @@ static uae_u32 REGPARAM2 dummy_wget (uaecptr addr)
 		dummylog (0, addr, 2, 0, 0);
 	return dummy_get (addr, 2);
 }
+//TODO WRAP THIS!!
 uae_u32 REGPARAM2 dummy_wgeti (uaecptr addr)
 {
 #ifdef JIT
@@ -382,7 +384,7 @@ static void REGPARAM2 chipmem_wput_ce2 (uaecptr addr, uae_u32 w)
 	ce2_timeout ();
 	do_put_mem_word (m, w);
 }
-
+//TODO Wrap this? nome diferente da declaraçao no memory.h...
 static void REGPARAM2 chipmem_bput_ce2 (uaecptr addr, uae_u32 b)
 {
 #ifdef JIT
@@ -436,7 +438,7 @@ static uae_u32 REGPARAM2 chipmem_bget (uaecptr addr)
 #endif
 	return v;
 }
-
+//TODO WRAP THIS!!
 void REGPARAM2 chipmem_lput (uaecptr addr, uae_u32 l)
 {
 #ifdef FSUAE
@@ -455,7 +457,7 @@ void REGPARAM2 chipmem_lput (uaecptr addr, uae_u32 l)
 	m = (uae_u32 *)(chipmemory + addr);
 	do_put_mem_long (m, l);
 }
-
+//TODO WRAP THIS!!
 void REGPARAM2 chipmem_wput (uaecptr addr, uae_u32 w)
 {
 #ifdef FSUAE
@@ -474,7 +476,7 @@ void REGPARAM2 chipmem_wput (uaecptr addr, uae_u32 w)
 	m = (uae_u16 *)(chipmemory + addr);
 	do_put_mem_word (m, w);
 }
-
+//TODO WRAP THIS!!
 void REGPARAM2 chipmem_bput (uaecptr addr, uae_u32 b)
 {
 #ifdef FSUAE
@@ -550,7 +552,7 @@ static uae_u32 REGPARAM2 chipmem_agnus_lget (uaecptr addr)
 #endif
 	return do_get_mem_long (m);
 }
-
+//TODO WRAP THIS!!
 uae_u32 REGPARAM2 chipmem_agnus_wget (uaecptr addr)
 {
 	uae_u16 *m;
@@ -591,7 +593,7 @@ static void REGPARAM2 chipmem_agnus_lput (uaecptr addr, uae_u32 l)
 	m = (uae_u32 *)(chipmemory + addr);
 	do_put_mem_long (m, l);
 }
-
+//TODO WRAP THIS!!
 void REGPARAM2 chipmem_agnus_wput (uaecptr addr, uae_u32 w)
 {
 #ifdef FSUAE
@@ -1283,14 +1285,14 @@ static uae_u8 *REGPARAM2 extendedkickmem2_xlate (uaecptr addr)
 
 
 /* Default memory access functions */
-
+//TODO WRAP THIS!!
 int REGPARAM2 default_check (uaecptr a, uae_u32 b)
 {
 	return 0;
 }
 
 static int be_cnt;
-
+//TODO WRAP THIS!!
 uae_u8 *REGPARAM2 default_xlate (uaecptr a)
 {
 	if (quit_program == 0) {
@@ -1983,12 +1985,12 @@ err:
 }
 
 #ifndef NATMEM_OFFSET
-
+//TODO WRAP THIS!!
 uae_u8 *mapped_malloc (size_t s, const TCHAR *file)
 {
 	return xmalloc (uae_u8, s);
 }
-
+//TODO WRAP THIS!!
 void mapped_free (uae_u8 *p)
 {
 	xfree (p);
@@ -2118,7 +2120,7 @@ static void add_shmmaps (uae_u32 start, addrbank *what)
 		y->next->prev = y;
 	shm_start = y;
 }
-
+//TODO WRAP THIS!!
 uae_u8 *mapped_malloc (size_t s, const TCHAR *file)
 {
 	int id;
@@ -2423,7 +2425,7 @@ static void fill_ce_banks (void)
 			memcpy (&ce_banktype[i * 256], &ce_banktype[0], 256);
 	}
 }
-
+//TODO WRAP THIS!!
 void map_overlay (int chip)
 {
 	int size;
@@ -2473,7 +2475,7 @@ void map_overlay (int chip)
 	if (!isrestore () && valid_address (regs.pc, 4))
 		m68k_setpc (m68k_getpc ());
 }
-
+//TODO WRAP THIS!!
 uae_s32 getz2size (struct uae_prefs *p)
 {
 	ULONG start;
@@ -2487,7 +2489,7 @@ uae_s32 getz2size (struct uae_prefs *p)
 	start += p->rtgmem_size;
 	return start;
 }
-
+//TODO WRAP THIS!!
 ULONG getz2endaddr (void)
 {
 	ULONG start;
@@ -2500,7 +2502,7 @@ ULONG getz2endaddr (void)
 	}
 	return start + 2 * 1024 * 1024;
 }
-
+//TODO WRAP THIS!!
 void memory_clear (void)
 {
 	mem_hardreset = 0;
@@ -2517,6 +2519,7 @@ void memory_clear (void)
 	expansion_clear ();
 }
 
+//TODO WRAP THIS!!
 void memory_reset (void)
 {
 	int bnk, bnk_end;
@@ -2798,8 +2801,8 @@ void memory_reset (void)
 	}
 	write_log (_T("memory init end\n"));
 }
-
-
+//memory_reset acaba aqui... omfgwtf
+//TODO WRAP THIS!!
 void memory_init (void)
 {
 	init_mem_banks ();//TODO membank
@@ -2836,7 +2839,7 @@ void memory_init (void)
 #endif
 #endif
 }
-
+//TODO WRAP THIS!!
 void memory_cleanup (void)
 {
 	if (a3000lmemory)
@@ -2879,13 +2882,13 @@ void memory_cleanup (void)
 	arcadia_unmap ();
 #endif
 }
-
+//TODO WRAP THIS!!
 void memory_hardreset (int mode)
 {
 	if (mode + 1 > mem_hardreset)
 		mem_hardreset = mode + 1;
 }
-
+//TODO WRAP THIS!!
 void map_banks (addrbank *bank, int start, int size, int realsize)
 {
 	int bnr, old;
@@ -3150,7 +3153,7 @@ uae_u8 *save_rom (int first, int *len, uae_u8 *dstptr)
 #endif /* SAVESTATE */
 
 /* memory helpers */
-
+//TODO WRAP THIS!!
 void memcpyha_safe (uaecptr dst, const uae_u8 *src, int size)
 {
 	if (!addr_valid (_T("memcpyha"), dst, size))
@@ -3158,11 +3161,13 @@ void memcpyha_safe (uaecptr dst, const uae_u8 *src, int size)
 	while (size--)
 		put_byte (dst++, *src++);
 }
+//TODO WRAP THIS!!
 void memcpyha (uaecptr dst, const uae_u8 *src, int size)
 {
 	while (size--)
 		put_byte (dst++, *src++);
 }
+//TODO WRAP THIS!!
 void memcpyah_safe (uae_u8 *dst, uaecptr src, int size)
 {
 	if (!addr_valid (_T("memcpyah"), src, size))
@@ -3170,11 +3175,13 @@ void memcpyah_safe (uae_u8 *dst, uaecptr src, int size)
 	while (size--)
 		*dst++ = get_byte (src++);
 }
+//TODO WRAP THIS!!
 void memcpyah (uae_u8 *dst, uaecptr src, int size)
 {
 	while (size--)
 		*dst++ = get_byte (src++);
 }
+//TODO WRAP THIS!!
 uae_char *strcpyah_safe (uae_char *dst, uaecptr src, int maxsize)
 {
 	uae_char *res = dst;
@@ -3192,6 +3199,7 @@ uae_char *strcpyah_safe (uae_char *dst, uaecptr src, int maxsize)
 	} while (b);
 	return res;
 }
+//TODO WRAP THIS!!
 uaecptr strcpyha_safe (uaecptr dst, const uae_char *src)
 {
 	uaecptr res = dst;
@@ -3205,7 +3213,7 @@ uaecptr strcpyha_safe (uaecptr dst, const uae_char *src)
 	return res;
 }
 #ifdef FSUAE
-
+//TODO WRAP THIS!!
 int uae_get_memory_checksum() {
 	uint32_t checksum = 0;
     int size;
