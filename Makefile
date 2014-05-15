@@ -669,11 +669,13 @@ dist_dir_launcher := fs-uae-launcher-$(version)
 debseries := unstable
 debversion := $(shell date +"%s")
 
-include targets.mk
-
+.PHONY: memory-manager
 memory-manager:
 	$(make) -C memory-manager all
 
+include targets.mk
+
+.PHONY: memory-manager-clean
 memory-manager-clean:
 	$(make) -C memory-manager clean
 

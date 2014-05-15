@@ -6,6 +6,8 @@ RM=rm -f
 SRCS=$(wildcard *.cpp)
 OBJS=$(subst .cpp,.o,$(SRCS))
 
+.PHONY: all depend clean exe-clean
+
 all: server client
 
 server: server.o
