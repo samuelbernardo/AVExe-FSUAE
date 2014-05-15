@@ -157,7 +157,6 @@ extern uae_u8 *baseaddr[MEMORY_BANKS];
 extern addrbank avex_get_membank(uaecptr addr);
 #define get_mem_bank(addr) (avex_get_membank(bankindex(addr))) //TODO this is how mem_banks is accessed from the outside, needs wrapper
 
-
 #ifdef JIT
 #define put_mem_bank(addr, b, realstart) do { \
 	(mem_banks[bankindex(addr)] = (b)); \
