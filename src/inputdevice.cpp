@@ -1083,7 +1083,8 @@ int mousehack_alive (void)
 static uaecptr get_base (const uae_char *name)
 {
 	uaecptr v = get_long (4);
-	addrbank *b = &get_mem_bank(v);
+	addrbank tmpfix = get_mem_bank(v);
+	addrbank *b = &tmpfix;
 
 	if (!b || !b->check (v, 400) || b->flags != ABFLAG_RAM)
 		return 0;
@@ -1091,11 +1092,13 @@ static uaecptr get_base (const uae_char *name)
 	while (v = get_long (v)) {
 		uae_u32 v2;
 		uae_u8 *p;
-		b = &get_mem_bank (v);
+		tmpfix = get_mem_bank(v);
+		b = &tmpfix;
 		if (!b || !b->check (v, 32) || b->flags != ABFLAG_RAM)
 			goto fail;
 		v2 = get_long (v + 10); // name
-		b = &get_mem_bank (v2);
+		tmpfix = get_mem_bank(v2);
+		b = &tmpfix;
 		if (!b || !b->check (v2, 20))
 			goto fail;
 		if (b->flags != ABFLAG_ROM && b->flags != ABFLAG_RAM)

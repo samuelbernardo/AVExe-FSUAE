@@ -5520,7 +5520,8 @@ void cpureset (void)
 	}
 	pc = m68k_getpc ();
 	if (pc >= currprefs.chipmem_size) {
-		addrbank *b = &get_mem_bank (pc);
+		addrbank tmpfix = get_mem_bank (pc);
+		addrbank *b = &tmpfix;
 		if (b->check (pc, 2 + 2)) {
 			/* We have memory, hope for the best.. */
 			custom_reset (false, false);

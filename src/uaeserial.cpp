@@ -398,7 +398,8 @@ static void abort_async (struct devstruct *dev, uaecptr request)
 
 static uae_u8 *memmap(uae_u32 addr, uae_u32 len)
 {
-	addrbank *bank_data = &get_mem_bank (addr);
+	addrbank tmpfix = get_mem_bank (addr);
+	addrbank *bank_data = &tmpfix;
 	if (!bank_data->check (addr, len))
 		return NULL;
 	return bank_data->xlateaddr (addr);

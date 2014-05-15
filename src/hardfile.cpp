@@ -1033,7 +1033,8 @@ static uae_u64 cmd_readx (struct hardfiledata *hfd, uae_u8 *dataptr, uae_u64 off
 }
 static uae_u64 cmd_read (struct hardfiledata *hfd, uaecptr dataptr, uae_u64 offset, uae_u64 len)
 {
-	addrbank *bank_data = &get_mem_bank (dataptr);
+	addrbank tmpfix = get_mem_bank (dataptr);
+	addrbank *bank_data = &tmpfix;
 	if (!len || !bank_data || !bank_data->check (dataptr, len))
 		return 0;
 	return cmd_readx (hfd, bank_data->xlateaddr (dataptr), offset, len);
@@ -1048,7 +1049,8 @@ static uae_u64 cmd_writex (struct hardfiledata *hfd, uae_u8 *dataptr, uae_u64 of
 
 static uae_u64 cmd_write (struct hardfiledata *hfd, uaecptr dataptr, uae_u64 offset, uae_u64 len)
 {
-	addrbank *bank_data = &get_mem_bank (dataptr);
+	addrbank tmpfix = get_mem_bank (dataptr);
+	addrbank *bank_data = &tmpfix;
 	if (!len || !bank_data || !bank_data->check (dataptr, len))
 		return 0;
 	return cmd_writex (hfd, bank_data->xlateaddr (dataptr), offset, len);
@@ -1406,7 +1408,8 @@ static int handle_scsi (uaecptr request, struct hardfiledata *hfd)
 	uae_u32 i;
 	uae_u8 reply[256], sense[256];
 	uae_u8 *scsi_data_ptr = NULL;
-	addrbank *bank_data = &get_mem_bank (scsi_data);
+	addrbank tmpfix = get_mem_bank (scsi_data);
+	addrbank *bank_data = &tmpfix;
 
 	if (bank_data  && bank_data->check (scsi_data, scsi_len))
 		scsi_data_ptr = bank_data->xlateaddr (scsi_data);

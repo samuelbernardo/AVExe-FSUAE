@@ -1360,13 +1360,15 @@ static void allocate_expamem (void)
 static uaecptr check_boot_rom (void)
 {
 	uaecptr b = RTAREA_DEFAULT;
+	addrbank tmpfix;
 	addrbank *ab;
 
 	if (currprefs.cs_cdtvcd || currprefs.cs_cdtvscsi || currprefs.uae_hide > 1)
 		b = RTAREA_BACKUP;
 	if (currprefs.cs_mbdmac == 1)
 		b = RTAREA_BACKUP;
-	ab = &get_mem_bank (RTAREA_DEFAULT);
+	tmpfix = get_mem_bank (RTAREA_DEFAULT);
+	ab = &tmpfix;
 	if (ab) {
 		if (valid_address (RTAREA_DEFAULT, 65536))
 			b = RTAREA_BACKUP;

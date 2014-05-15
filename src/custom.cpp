@@ -7912,13 +7912,14 @@ uae_u8 *restore_custom_extra (uae_u8 *src)
 uae_u8 *save_custom_extra (int *len, uae_u8 *dstptr)
 {
 	uae_u8 *dstbak, *dst;
-
+	addrbank tmpfix;
 	if (dstptr)
 		dstbak = dst = dstptr;
 	else
 		dstbak = dst = xmalloc (uae_u8, 1000);
 
-	SL ((currprefs.cs_compatible << 24) | (&get_mem_bank (0) != &chipmem_bank ? 2 : 0) | 1);
+	tmpfix = get_mem_bank (0);
+	SL ((currprefs.cs_compatible << 24) | (&tmpfix != &chipmem_bank ? 2 : 0) | 1);
 	SB (currprefs.genlock ? 1 : 0);
 	SB (currprefs.cs_rtc);
 	SL (currprefs.cs_rtc_adjust);

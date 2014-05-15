@@ -1840,12 +1840,14 @@ int sys_command_scsi_direct (int unitnum, uaecptr acmd)
 	int ret, i;
 	struct amigascsi as = { 0 };
 	uaecptr ap;
+	addrbank tmpfix;
 	addrbank *bank;
 
 	ap = get_long (acmd + 0);
 	as.len = get_long (acmd + 4);
 
-	bank = &get_mem_bank (ap);
+	tmpfix = get_mem_bank (ap);
+	bank = &tmpfix;
 	if (!bank || !bank->check(ap, as.len))
 		return IOERR_BADADDRESS;
 	as.data = bank->xlateaddr (ap);

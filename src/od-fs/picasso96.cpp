@@ -330,7 +330,8 @@ static void checkrtglibrary(void)
     while ((v = get_long (v))) {
         uae_u32 v2 = get_long (v + 10); // name
         uae_u8 *p;
-        addrbank *b = &get_mem_bank (v2);
+        addrbank tmpfix = get_mem_bank (v2);
+        addrbank *b = &tmpfix;
         if (!b || !b->check (v2, 12))
             continue;
         p = b->xlateaddr(v2);
