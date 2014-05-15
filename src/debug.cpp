@@ -1921,8 +1921,9 @@ static int memwatch_func (uaecptr addr, int rwi, int size, uae_u32 *valp)
 
 		if (!brk)
 			continue;
-		if (mem_banks[addr >> 16]->check (addr, size)) {
-			uae_u8 *p = mem_banks[addr >> 16]->xlateaddr (addr);
+		addrbank tmpfix = get_mem_bank(addr);
+		if ((&tmpfix)->check (addr, size)) {
+			uae_u8 *p = (&tmpfix)->xlateaddr (addr);
 			if (size == 1)
 				oldval = p[0];
 			else if (size == 2)
@@ -2249,7 +2250,8 @@ static void initialize_memwatch (int mode)
 	oa = NULL;
 	for (i = 0; i < as; i++) {
 		a1 = debug_mem_banks[i] = debug_mem_area + i;
-		a2 = mem_banks[i];
+		addrbank tmpfix = get_mem_bank(i);
+		a2 = &tmpfix;
 		if (a2 != oa) {
 			for (j = 0; membank_stores[j].addr; j++) {
 				if (membank_stores[j].addr == a2)
@@ -2263,7 +2265,8 @@ static void initialize_memwatch (int mode)
 		memcpy (a1, a2, sizeof (addrbank));
 	}
 	for (i = 0; i < as; i++) {
-		a2 = mem_banks[i];
+		addrbank tmpfix = get_mem_bank(i);
+		a2 = &tmpfix;
 		a2->bget = mode ? mmu_bget : debug_bget;
 		a2->wget = mode ? mmu_wget : debug_wget;
 		a2->lget = mode ? mmu_lget : debug_lget;
@@ -2515,16 +2518,18 @@ static void writeintomem (TCHAR **c)
 
 static uae_u8 *dump_xlate (uae_u32 addr)
 {
-	if (!mem_banks[addr >> 16]->check (addr, 1))
+	addrbank tmpfix = get_mem_bank(addr);
+	if (!(&tmpfix)->check (addr, 1))
 		return NULL;
-	return mem_banks[addr >> 16]->xlateaddr (addr);
+	return (&tmpfix)->xlateaddr (addr);
 }
 
 static void memory_map_dump_2 (int log)
 {
 	bool imold;
 	int i, j, max;
-	addrbank *a1 = mem_banks[0];
+	addrbank tmpfix = get_mem_bank(0);
+	addrbank *a1 = &tmpfix;
 	TCHAR txt[256];
 
 	imold = currprefs.illegal_mem;
@@ -2534,7 +2539,8 @@ static void memory_map_dump_2 (int log)
 	for (i = 0; i < max + 1; i++) {
 		addrbank *a2 = NULL;
 		if (i < max)
-			a2 = mem_banks[i];
+			tmpfix = get_mem_bank(i);
+			a2 = &tmpfix;
 		if (a1 != a2) {
 			int k, mirrored, size, size_out;
 			TCHAR size_ext;

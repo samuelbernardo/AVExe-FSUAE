@@ -149,7 +149,7 @@ extern uae_u32 REGPARAM3 dummy_wgeti (uaecptr addr) REGPARAM; //TODO memory.cpp
 
 #define bankindex(addr) (((uaecptr)(addr)) >> 16) //TODO may be important
 
-extern addrbank *mem_banks[MEMORY_BANKS];//not used directly out of memory.cpp, no neet to wrap it
+//extern addrbank *mem_banks[MEMORY_BANKS];//not used directly out of memory.cpp, no neet to wrap it
 
 #ifdef JIT
 extern uae_u8 *baseaddr[MEMORY_BANKS];

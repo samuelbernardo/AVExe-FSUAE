@@ -45,11 +45,6 @@ int special_mem;
 static int mem_hardreset;
 
 
-addrbank avex_get_membank(uaecptr addr) {
-	return *mem_banks[addr];
-}
-
-
 static bool isdirectjit (void)
 {
 	return currprefs.cachesize && !currprefs.comptrustbyte;
@@ -97,8 +92,11 @@ static bool bogomem_aliasing;
 
 /* The address space setting used during the last reset.  */
 static bool last_address_space_24;
-//TODO WRAP THIS!! somehow...
+//TODO WRAPPED! :3
 addrbank *mem_banks[MEMORY_BANKS];
+addrbank avex_get_membank(uaecptr addr) {
+	return *mem_banks[addr];
+}
 
 /* This has two functions. It either holds a host address that, when added
 to the 68k address, gives the host address corresponding to that 68k
