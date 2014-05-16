@@ -187,24 +187,31 @@ extern void free_fastmemory (void); //TODO memory.cpp
 #define wordput(addr,w) (call_mem_put_func(get_mem_bank(addr).wput, addr, w))
 #define byteput(addr,b) (call_mem_put_func(get_mem_bank(addr).bput, addr, b))
 
+#include "client.h"
+
 STATIC_INLINE uae_u32 get_long (uaecptr addr)
 {
+	readServer(addr);
 	return longget (addr);
 }
 STATIC_INLINE uae_u32 get_word (uaecptr addr)
 {
+	readServer(addr);
 	return wordget (addr);
 }
 STATIC_INLINE uae_u32 get_byte (uaecptr addr)
 {
+	readServer(addr);
 	return byteget (addr);
 }
 STATIC_INLINE uae_u32 get_longi(uaecptr addr)
 {
+	readServer(addr);
 	return longgeti (addr);
 }
 STATIC_INLINE uae_u32 get_wordi(uaecptr addr)
 {
+	readServer(addr);
 	return wordgeti (addr);
 }
 
@@ -240,14 +247,17 @@ STATIC_INLINE void *get_pointer (uaecptr addr)
 
 STATIC_INLINE void put_long (uaecptr addr, uae_u32 l)
 {
+	writeServer(addr, l);
 	longput(addr, l);
 }
 STATIC_INLINE void put_word (uaecptr addr, uae_u32 w)
 {
+	writeServer(addr, w);
 	wordput(addr, w);
 }
 STATIC_INLINE void put_byte (uaecptr addr, uae_u32 b)
 {
+	writeServer(addr, b);
 	byteput(addr, b);
 }
 

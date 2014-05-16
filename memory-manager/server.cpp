@@ -20,7 +20,8 @@
 //#include <queue>
 //#include <chrono>
 #include <errno.h>
-#include "unix_socket.h"
+#include <signal.h>
+#include "server.h"
 
 using namespace std;
 
@@ -28,33 +29,33 @@ void *task1(void *);
 
 //mutex mtx;
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-static int listenFd, connFd[MAX_CLIENTS], noThread, noThreadLocal;
+static int listenFd, connFd, noThread;
+
+static MemoryStorage &memoryStorage = *(new MemoryStorage());
+
+bool run = true;
+
+void sighandler(int sig)
+{
+    cout<< "Signal " << sig << " caught..." << endl;
+
+    run = false;
+}
 
 int main(int argc, char* argv[])
 {
     //int pId, portNo;
     socklen_t len; //store size of the address
-    bool loop = false;
+    int noThreadLocal;
     struct sockaddr_un svrAdd;
 
-    pthread_t threadA[MAX_CLIENTS];
+    pthread_t threadA;
 
-    /*if (argc < 2)
-    {
-        cerr << "Syntax : ./server <port>" << endl;
-        return 0;
-    }
-
-    portNo = strtol(argv[1],NULL,10);
-
-    if((portNo > 65535) || (portNo < 2000))
-    {
-        cerr << "Please enter a port number between 2000 - 65535" << endl;
-        return 0;
-    }*/
+    signal(SIGABRT, &sighandler);
+    signal(SIGTERM, &sighandler);
+    signal(SIGINT, &sighandler);
 
     //create socket
-    //listenFd = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
     listenFd = socket(PF_UNIX, SOCK_STREAM, 0);
 
     if(listenFd < 0)
@@ -65,9 +66,6 @@ int main(int argc, char* argv[])
 
     bzero((char*) &svrAdd, sizeof(svrAdd));
 
-    //svrAdd.sin_family = PF_INET;
-    //svrAdd.sin_addr.s_addr = INADDR_ANY;
-    //svrAdd.sin_port = htons(portNo);
     svrAdd.sun_family = PF_UNIX;
     strcpy(svrAdd.sun_path, SOCKET_PATH);
     unlink(svrAdd.sun_path);
@@ -82,16 +80,16 @@ int main(int argc, char* argv[])
 
     listen(listenFd, QUEUE_CLIENTS);
 
-    for(noThreadLocal=0, noThread = 0; noThread < 3; noThreadLocal++)
+    for(run=true, noThreadLocal=0, noThread = 0; run; noThreadLocal++)
     {
         cout << "Listening" << endl;
         struct sockaddr_un clntAdd;
 		socklen_t len = sizeof(clntAdd);
 
 		//this is where client connects. svr will hang in this mode until client conn
-		connFd[noThread] = accept(listenFd, (struct sockaddr *)&clntAdd, &len);
+		connFd = accept(listenFd, (struct sockaddr *)&clntAdd, &len);
 
-		if (connFd[noThread] < 0)
+		if (connFd < 0)
 		{
 			cerr << "Cannot accept connection" << endl;
 			return 0;
@@ -101,15 +99,21 @@ int main(int argc, char* argv[])
 			cout << "Connection successful" << endl;
 		}
 
-        pthread_create(&threadA[noThread], NULL, task1, NULL);
+        pthread_create(&threadA, NULL, task1, NULL);
+        pthread_join(threadA, NULL);
 
+        // TODO: very inefficient
         while(noThreadLocal == noThread);
     }
 
-    for(int i = 0; i < 3; i++)
+#if 0
+    for(int i = 0; i < noThreadLocal; i++)
     {
         pthread_join(threadA[i], NULL);
     }
+#endif
+
+    cout << "Server terminated!" << endl;
 
 }
 
@@ -118,43 +122,27 @@ void *task1 (void *dummyPt)
 	//mtx.lock();
 	int rc = pthread_mutex_lock(&mutex);
     int myThread = noThread;
+    int myConnFd = connFd;
     noThread++;
     //mtx.unlock();
     pthread_mutex_unlock(&mutex);
 
+    memPDU memoryBank;
+
     cout << "Thread No: " << pthread_self() << endl;
     cout << "MyThread No: " << myThread << endl;
-    char test[300];
-    bool loop = false;
-    while(!loop)
-    {
-        bzero(test, 300);
 
-        /*int n = recv(connFd, test, 300, 0);
-        if (n <= 0) {
-            if (n < 0) perror("recv");
-            loop = true;
-        }
+	read(myConnFd, &memoryBank, sizeof(memPDU));
 
-        if (!loop)
-            if (send(connFd, test, n, 0) < 0) {
-                perror("send");
-                loop = true;
-            }*/
+	if(memoryBank.op == MEMSERVER_READ) {
+		//memoryBank.data = memoryStorage.getMemoryData(memoryBank.addr, memoryBank.id);
+		write(myConnFd, &memoryBank, sizeof(memPDU));
+	}
+	else {
+		//memoryStorage.putMemoryData(memoryBank.addr, memoryBank.id, memoryBank.data);
+	}
 
-        read(connFd[myThread], test, 300);
-
-        string tester(test);
-        cout << tester << endl;
-
-        ostringstream oss;
-        oss << "Server: " << tester << " -> message received with success!" << endl;
-        string s = oss.str();
-        write(connFd[myThread], s.c_str(), s.length());
-
-        if(tester == "exit")
-            break;
-    }
     cout << "\nClosing thread and conn" << endl;
-    close(connFd[myThread]);
+    close(myConnFd);
+
 }

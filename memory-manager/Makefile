@@ -1,20 +1,30 @@
-cxxflags=$(CXXFLAGS)
-ldflags=$(LDFLAGS) -lpthread
+cxxflags=$(CXXFLAGS) -std=c++11 \
+		-I../src/od-fs -I../src/od-fs/include \
+		-I../src/include -I../gensrc -I../src \
+		-I../$(libfsemu_dir)/include \
+		-I$(libfsemu_dir)/src/lua
+ldflags=$(LDFLAGS) -lpthread -lcrypto
 #CXX=g++
 RM=rm -f
 
 SRCS=$(wildcard *.cpp)
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-.PHONY: all depend clean exe-clean
+.PHONY: all depend clean exe-clean .depend
 
-all: server client
+all: server client.o
 
-server: server.o
+server: server.o MemoryStorage.o
 	$(CXX) $(ldflags) -o server server.o
 
-client: client.o
-	$(CXX) $(ldflags) -o client client.o
+server.o: server.cpp
+	$(CXX) $(cxxflags) -c -o server.o server.cpp
+	
+client.o: client.cpp
+	$(CXX) $(cxxflags) -c -o client.o client.cpp
+
+MemoryStorage.o: MemoryStorage.cpp
+	$(CXX) $(cxxflags) -c -o MemoryStorage.o MemoryStorage.cpp
 
 depend: .depend
 

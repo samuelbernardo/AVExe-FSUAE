@@ -38,10 +38,11 @@ errors = -Werror=implicit-function-declaration -Werror=return-type
 cxxflags = $(warnings) $(errors) -Isrc/od-fs -Isrc/od-fs/include \
 		-Isrc/include -Igensrc -Isrc \
 		-I$(libfsemu_dir)/include \
-		-Wno-write-strings -fpermissive
+		-Imemory-manager \
+		-Wno-write-strings -fpermissive -std=c++11
 
 cflags = -std=c99 $(cxxflags)
-ldflags =
+ldflags = 
 libs = -L$(libfsemu_dir)/out -lfsemu -lpng -lz
 
 else
@@ -66,7 +67,8 @@ common_flags = -Isrc/od-fs -Isrc/od-fs/include \
 		`pkg-config --cflags glib-2.0 gthread-2.0 libpng` \
 		-I$(libfsemu_dir)/include \
 		-I$(libfsemu_dir)/src/lua \
-		`$(sdl_config) --cflags`
+		-Imemory-manager \
+		`$(sdl_config) --cflags` -std=c++11
 cflags = $(common_flags) -std=c99 $(CFLAGS)
 #cxxflags = $(common_flags) -fpermissive $(CXXFLAGS)
 cxxflags = $(common_flags) $(CXXFLAGS)
@@ -328,7 +330,8 @@ obj/od-fs-threading.o \
 obj/od-fs-uae_host.o \
 obj/od-fs-uaemisc.o \
 obj/od-fs-version.o \
-obj/od-fs-video.o
+obj/od-fs-video.o \
+memory-manager/client.o
 
 ifeq ($(generate), 1)
 
