@@ -676,6 +676,9 @@ debversion := $(shell date +"%s")
 memory-manager:
 	$(make) -C memory-manager all
 
+memory-manager/client.o: memory-manager/client.cpp
+	$(cxx) $(cppflags) $(cxxflags) -c $< -o $@
+
 include targets.mk
 
 .PHONY: memory-manager-clean
@@ -688,6 +691,6 @@ clean-dist:
 clean: memory-manager-clean
 	$(make) -C $(libfsemu_dir) clean
 	rm -f gensrc/build68k gensrc/genblitter gensrc/gencpu gensrc/genlinetoscr
-	rm -f obj/*.o obj/*.a fs-uae fs-uae.exe fs-uae-device-helper fs-uae-device-helper.exe
+	rm -f obj/*.o obj/*.a fs-uae fs-uae.exe fs-uae-device-helper fs-uae-device-helper.exe server mem_socket
 
 distclean: clean clean-dist

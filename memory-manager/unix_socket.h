@@ -22,4 +22,5 @@ typedef struct {
 	uae_u32 data;
 } memPDU;
 
+
 #endif

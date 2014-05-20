@@ -95,3 +95,8 @@ memory-manager/.depend
 memory-manager/client
 memory-manager/server
 Debug
+.settings/
+memory-manager/log.txt
+log.txt
+server
+memory-manager/server

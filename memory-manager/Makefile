@@ -15,7 +15,11 @@ OBJS=$(subst .cpp,.o,$(SRCS))
 all: server client.o
 
 server: server.o MemoryStorage.o
-	$(CXX) $(ldflags) -o server server.o
+	$(CXX) $(ldflags) -o server $^
+	cp server ..
+
+MemoryStorage: MemoryStorage.o
+	$(CXX) $(ldflags) -o $@ $^
 
 server.o: server.cpp
 	$(CXX) $(cxxflags) -c -o server.o server.cpp
@@ -26,16 +30,16 @@ client.o: client.cpp
 MemoryStorage.o: MemoryStorage.cpp
 	$(CXX) $(cxxflags) -c -o MemoryStorage.o MemoryStorage.cpp
 
-depend: .depend
-
-.depend: $(SRCS)
-	rm -f ./.depend
-	$(CXX) $(cxxflags) -MM $^>>./.depend;
+#depend: .depend
+#
+#.depend: $(SRCS)
+#	rm -f ./.depend
+#	$(CXX) $(cxxflags) -MM $^>>./.depend;
 
 clean: exe-clean
 	$(RM) $(OBJS)
 
 exe-clean:
-	$(RM) server client
+	$(RM) server client mem_socket
 
 include .depend

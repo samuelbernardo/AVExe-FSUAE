@@ -21,6 +21,7 @@
 //#include <chrono>
 #include <errno.h>
 #include <signal.h>
+#include <assert.h>
 #include "server.h"
 
 using namespace std;
@@ -40,11 +41,11 @@ void sighandler(int sig)
     cout<< "Signal " << sig << " caught..." << endl;
 
     run = false;
+    close(listenFd);
 }
 
 int main(int argc, char* argv[])
 {
-    //int pId, portNo;
     socklen_t len; //store size of the address
     int noThreadLocal;
     struct sockaddr_un svrAdd;
@@ -63,6 +64,10 @@ int main(int argc, char* argv[])
         cerr << "Cannot open socket" << endl;
         return 0;
     }
+
+    //set socket options
+    socket_option_z = setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR,
+    		&so_reuseaddr, sizeof so_reuseaddr);
 
     bzero((char*) &svrAdd, sizeof(svrAdd));
 
@@ -92,7 +97,7 @@ int main(int argc, char* argv[])
 		if (connFd < 0)
 		{
 			cerr << "Cannot accept connection" << endl;
-			return 0;
+			break;
 		}
 		else
 		{
@@ -115,6 +120,28 @@ int main(int argc, char* argv[])
 
     cout << "Server terminated!" << endl;
 
+	int memSize = memoryStorage.memoryStorageSize();
+	int allRequests = memoryStorage.memoryStatsSize();
+	assert(allRequests!=0);
+	int optimization = memSize/allRequests;
+
+    ofstream logFile;
+    logFile.open("log.txt");
+    logFile << "memoryStorage: unordered_map<memoryID,uae_u32,memIDhash,memIDeqKey> database_type" << endl;
+	for (database_type_iterator iter = memoryStorage.memoryStorageBeginIterator(); iter != memoryStorage.memoryStorageEndIterator(); iter++) {
+		logFile << "Key: [" << iter->first.id << "," << iter->first.addr << "]\t\tData: " << iter->second << endl;
+	}
+	logFile << endl;
+	logFile << endl;
+	logFile << "memoryStats: unordered_multimap<uae_u32,memoryID> stats_type" << endl;
+	for (stats_type_iterator iter = memoryStorage.memoryStatsBeginIterator(); iter != memoryStorage.memoryStatsEndIterator(); iter++) {
+		logFile << "Key: "<< iter->first << "\t\tData: [" << iter->second.id << "," << iter->second.addr << "]" << endl;
+	}
+
+	cout << "memoryStorage.size() is " << memSize << endl;
+	cout << "memoryStats.size() is " << allRequests << endl;
+	cout << "Optimization acquired in run was: " << optimization << endl;
+
 }
 
 void *task1 (void *dummyPt)
@@ -135,11 +162,11 @@ void *task1 (void *dummyPt)
 	read(myConnFd, &memoryBank, sizeof(memPDU));
 
 	if(memoryBank.op == MEMSERVER_READ) {
-		//memoryBank.data = memoryStorage.getMemoryData(memoryBank.addr, memoryBank.id);
+		memoryBank.data = memoryStorage.getMemoryData(memoryBank.addr, memoryBank.id);
 		write(myConnFd, &memoryBank, sizeof(memPDU));
 	}
 	else {
-		//memoryStorage.putMemoryData(memoryBank.addr, memoryBank.id, memoryBank.data);
+		memoryStorage.putMemoryData(memoryBank.addr, memoryBank.id, memoryBank.data);
 	}
 
     cout << "\nClosing thread and conn" << endl;
