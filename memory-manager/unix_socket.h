@@ -3,12 +3,8 @@
 
 #include "MemoryStorage.h"
 
-/*struct sockaddr_un {
-    unsigned short sun_family;   AF_UNIX
-    char sun_path[108];
-}*/
-
-#define SOCKET_PATH "mem_socket"
+// Definições principais para a comunicação
+#define SOCKET_PATH "/tmp/mem_socket_fsuae"
 #define MAX_CLIENTS 3
 #define QUEUE_CLIENTS 5
 

@@ -65,7 +65,10 @@ int main(int argc, char* argv[])
         return 0;
     }
 
-    //set socket options
+    /**
+     * set socket options
+     * SO_REUSEADDR - para permitir a socket ser reutilizada imediatamente para o mesmo serviço
+     */
     socket_option_z = setsockopt(listenFd, SOL_SOCKET, SO_REUSEADDR,
     		&so_reuseaddr, sizeof so_reuseaddr);
 
@@ -120,17 +123,34 @@ int main(int argc, char* argv[])
 
     cout << "Server terminated!" << endl;
 
+    /**
+	 * Apresentação de resultados
+	 */
+#ifdef __MEMORY_DEDUPLICATION__
+	int memSize = memoryStorage.dedupMemoryStorageSize();
+	int dataSize = memoryStorage.dedupDataStorageSize();
+#else
 	int memSize = memoryStorage.memoryStorageSize();
+#endif
 	int allRequests = memoryStorage.memoryStatsSize();
 	assert(allRequests!=0);
-	int optimization = memSize/allRequests;
+	float access_ratio = ((float)memSize)/((float)allRequests);
 
-    ofstream logFile;
-    logFile.open("log.txt");
-    logFile << "memoryStorage: unordered_map<memoryID,uae_u32,memIDhash,memIDeqKey> database_type" << endl;
+	ofstream logFile;
+	logFile.open("log.txt");
+#ifdef __MEMORY_DEDUPLICATION__
+	logFile << "dedupMemoryStorage: unordered_map<memoryID,uae_u32*,memIDhash,memIDeqKey> deduplicated_database_type" << endl;
+	for (deduplicated_database_iterator iter = memoryStorage.dedupMemoryStorageBeginIterator(); iter != memoryStorage.dedupMemoryStorageEndIterator(); iter++) {
+		logFile << "Key: [" << iter->first.id << "," << iter->first.addr << "]\t\tData: ";
+		logFile << *(iter->second);
+		logFile << endl;
+	}
+#else
+	logFile << "memoryStorage: unordered_map<memoryID,uae_u32,memIDhash,memIDeqKey> database_type" << endl;
 	for (database_type_iterator iter = memoryStorage.memoryStorageBeginIterator(); iter != memoryStorage.memoryStorageEndIterator(); iter++) {
 		logFile << "Key: [" << iter->first.id << "," << iter->first.addr << "]\t\tData: " << iter->second << endl;
 	}
+#endif
 	logFile << endl;
 	logFile << endl;
 	logFile << "memoryStats: unordered_multimap<uae_u32,memoryID> stats_type" << endl;
@@ -138,9 +158,18 @@ int main(int argc, char* argv[])
 		logFile << "Key: "<< iter->first << "\t\tData: [" << iter->second.id << "," << iter->second.addr << "]" << endl;
 	}
 
+#ifdef __MEMORY_DEDUPLICATION__
+	assert(memSize!=0);
+	float optimization_ratio = ((float)dataSize)/((float)memSize);
+	cout << "dedupMemoryStorage.size() is " << memSize << endl;
+	cout << "dedupDataStorage.size() is " << dataSize << endl;
+	cout << "dedupMemoryStats.size() is " << allRequests << endl;
+	cout << "Optimization acquired in run was: " << optimization_ratio << endl;
+#else
 	cout << "memoryStorage.size() is " << memSize << endl;
 	cout << "memoryStats.size() is " << allRequests << endl;
-	cout << "Optimization acquired in run was: " << optimization << endl;
+#endif
+	cout << "Memory access ration was: " << access_ratio << endl;
 
 }
 

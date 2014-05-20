@@ -8,6 +8,9 @@
 #include <string>
 #include <stdlib.h>
 
+// Descomentar para correr o algoritmo com deduplicação
+#define __MEMORY_DEDUPLICATION__
+
 typedef unsigned int uae_u32;
 typedef uae_u32 uaecptr;
 
@@ -45,25 +48,50 @@ public:
 	   SHA512((unsigned char*) text.c_str(), text.length(), (unsigned char*)&digest);
 
 	   for(int i = 0; i < SHA512_DIGEST_LENGTH; i++)
-				sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+			sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
 
 	   return strtoul(mdString, NULL, 0);
+	}
+};
+
+/**
+ * Hash function for uae_32
+ */
+class uae_u32_hash {
+public:
+	size_t operator () (const uae_u32 &v) const
+	{
+		unsigned char digest[SHA512_DIGEST_LENGTH];
+		string text = to_string(v);
+		char mdString[SHA512_DIGEST_LENGTH*2+1];
+
+		SHA512((unsigned char*) text.c_str(), text.length(), (unsigned char*)&digest);
+
+		for(int i = 0; i < SHA512_DIGEST_LENGTH; i++)
+			sprintf(&mdString[i*2], "%02x", (unsigned int)digest[i]);
+
+		return strtoul(mdString, NULL, 0);
 	}
 };
 
 // versão normal da base de dados
 typedef unordered_map<memoryID,uae_u32,memIDhash,memIDeqKey> database_type;
 // versão optimizada com deduplicação da base de dados
-typedef unordered_set<uae_u32> deduplicated_data_type;
-typedef unordered_map<memoryID,deduplicated_data_type,memIDhash,memIDeqKey> deduplicated_database_type;
-
+typedef unordered_map<uae_u32,uae_u32,uae_u32_hash> deduplicated_data_type;
+typedef unordered_map<memoryID,uae_u32*,memIDhash,memIDeqKey> deduplicated_database_type;
+// para guardar todos os acessos (id, addr) efectuados a dados
 typedef unordered_multimap<uae_u32,memoryID> stats_type;
+// iteradores para os map anteriores
 typedef database_type::const_iterator database_type_iterator;
+typedef deduplicated_database_type::const_iterator deduplicated_database_iterator;
+typedef deduplicated_data_type::const_iterator deduplicated_data_iterator;
 typedef stats_type::const_iterator stats_type_iterator;
 
 class MemoryStorage {
 private:
 	database_type &memoryStorage = *(new database_type());
+	deduplicated_data_type &dedupDataStorage = *(new deduplicated_data_type());
+	deduplicated_database_type &dedupMemoryStorage = *(new deduplicated_database_type());
 	stats_type &memoryStats = *(new stats_type());
 
 	memoryID createIDpdu(uaecptr addr, int id);
@@ -73,6 +101,8 @@ public:
 
 	~MemoryStorage() {
 		delete &memoryStorage;
+		delete &dedupDataStorage;
+		delete &dedupMemoryStorage;
 		delete &memoryStats;
 	};
 
@@ -81,6 +111,12 @@ public:
 	 */
 	size_t memoryStorageSize() {
 		return memoryStorage.size();
+	}
+	size_t dedupDataStorageSize() {
+		return dedupDataStorage.size();
+	}
+	size_t dedupMemoryStorageSize() {
+		return dedupMemoryStorage.size();
 	}
 	size_t memoryStatsSize() {
 		return memoryStats.size();
@@ -94,6 +130,18 @@ public:
 	}
 	database_type_iterator memoryStorageEndIterator() {
 		return memoryStorage.end();
+	}
+	deduplicated_database_iterator dedupMemoryStorageBeginIterator() {
+		return dedupMemoryStorage.begin();
+	}
+	deduplicated_database_iterator dedupMemoryStorageEndIterator() {
+		return dedupMemoryStorage.end();
+	}
+	deduplicated_data_iterator dedupDataStorageBeginIterator() {
+		return dedupDataStorage.begin();
+	}
+	deduplicated_data_iterator dedupDataStorageEndIterator() {
+		return dedupDataStorage.end();
 	}
 	stats_type_iterator memoryStatsBeginIterator() {
 		return memoryStats.begin();
