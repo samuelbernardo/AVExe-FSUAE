@@ -55,7 +55,7 @@ void startConnection() {
 }
 
 void writeServer(uaecptr addr, uae_u32 data) {
-	int checker;
+	int checker, op;
 	/*
 	 * Verify if connection to server is already started
 	 */
@@ -65,31 +65,29 @@ void writeServer(uaecptr addr, uae_u32 data) {
 	/*
 	 * Send stuff to memory server
 	 */
-	memPDU memoryBank;
-	memoryBank.id = id;
-	memoryBank.op = MEMSERVER_WRITE;
-	memoryBank.addr = addr;
-	memoryBank.data = data;
+	//memPDU memoryBank;
+	//memoryBank.id = id;
+	op = MEMSERVER_WRITE;
 
-	checker = write(listenFd, &memoryBank.op, sizeof(int));
+	checker = write(listenFd, &op, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client writeServer: write error in op!" << endl;
 		exit(checker);
 	}
-	checker = write(listenFd, &memoryBank.id, sizeof(int));
+	checker = write(listenFd, &id, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client writeServer: write error in id!" << endl;
 		exit(checker);
 	}
-	checker = write(listenFd, &memoryBank.addr, sizeof(int));
+	checker = write(listenFd, &addr, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client writeServer: write error in addr!" << endl;
 		exit(checker);
 	}
-	checker = write(listenFd, &memoryBank.data, sizeof(int));
+	checker = write(listenFd, &data, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client writeServer: write error in data!" << endl;
@@ -99,7 +97,8 @@ void writeServer(uaecptr addr, uae_u32 data) {
 }
 
 uae_u32 readServer(uaecptr addr){
-	int checker;
+	int checker, op;
+	uae_u32 data;
 	/*
 	 * Verify if connection to server is already started
 	 */
@@ -109,39 +108,38 @@ uae_u32 readServer(uaecptr addr){
 	/*
 	 * Receive stuff from memory server
 	 */
-	memPDU memoryBank;
-	memoryBank.id = id;
-	memoryBank.op = MEMSERVER_READ;
-	memoryBank.addr = addr;
-	memoryBank.data = 0;
+	//memPDU memoryBank;
+	//memoryBank.id = id;
+	op = MEMSERVER_READ;
+	data = 0;
 
-	checker = write(listenFd, &memoryBank.op, sizeof(int));
+	checker = write(listenFd, &op, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client readServer: write error in op!" << endl;
 		exit(checker);
 	}
-	checker = write(listenFd, &memoryBank.id, sizeof(int));
+	checker = write(listenFd, &id, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client readServer: write error in id!" << endl;
 		exit(checker);
 	}
-	checker = write(listenFd, &memoryBank.addr, sizeof(int));
+	checker = write(listenFd, &addr, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client readServer: write error in addr!" << endl;
 		exit(checker);
 	}
 
-	checker = read(listenFd, (int*)&memoryBank.data, sizeof(int));
+	checker = read(listenFd, (int*)&data, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "client readServer: read error in data!" << endl;
 		exit(checker);
 	}
 
-	return memoryBank.data;
+	return data;
 }
 
 

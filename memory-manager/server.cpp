@@ -184,8 +184,10 @@ void *task1 (void *dummyPt)
     //mtx.unlock();
     pthread_mutex_unlock(&mutex);
 
-    memPDU memoryBank;
-    int op;
+    //memPDU memoryBank;
+    int op, id;
+    uaecptr addr;
+    uae_u32 data;
     int checker;
 
     cout << "Thread No: " << pthread_self() << endl;
@@ -198,22 +200,22 @@ void *task1 (void *dummyPt)
 		cerr << "server readServer: read error in op!" << endl;
 		exit(checker);
 	}
-	checker = read(myConnFd, (int*)&memoryBank.id, sizeof(int));
+	checker = read(myConnFd, (int*)&id, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "server readServer: read error in id!" << endl;
 		exit(checker);
 	}
-	checker = read(myConnFd, (int*)&memoryBank.addr, sizeof(int));
+	checker = read(myConnFd, (int*)&addr, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "server readServer: read error in addr!" << endl;
 		exit(checker);
 	}
 
-	if(memoryBank.op == MEMSERVER_READ) {
-		memoryBank.data = memoryStorage.getMemoryData(memoryBank.addr, memoryBank.id);
-		checker = write(myConnFd, &memoryBank.data, sizeof(int));
+	if(op == MEMSERVER_READ) {
+		data = memoryStorage.getMemoryData(addr, id);
+		checker = write(myConnFd, &data, sizeof(int));
 		if (checker < 0)
 		{
 			cerr << "server readServer: write error in data!" << endl;
@@ -221,13 +223,13 @@ void *task1 (void *dummyPt)
 		}
 	}
 	else {
-		checker = read(myConnFd, (int*)&memoryBank.data, sizeof(int));
+		checker = read(myConnFd, (int*)&data, sizeof(int));
 		if (checker < 0)
 		{
 			cerr << "server readServer: read error in data!" << endl;
 			exit(checker);
 		}
-		memoryStorage.putMemoryData(memoryBank.addr, memoryBank.id, memoryBank.data);
+		memoryStorage.putMemoryData(addr, id, data);
 	}
 
     cout << "\nClosing thread and conn" << endl;
