@@ -180,9 +180,9 @@ void *task1 (void *dummyPt)
 	int rc = pthread_mutex_lock(&mutex);
     int myThread = noThread;
     int myConnFd = connFd;
-    noThread++;
+    //noThread++;
     //mtx.unlock();
-    pthread_mutex_unlock(&mutex);
+    //pthread_mutex_unlock(&mutex);
 
     //memPDU memoryBank;
     int op, id;
@@ -232,6 +232,8 @@ void *task1 (void *dummyPt)
 		memoryStorage.putMemoryData(addr, id, data);
 	}
 
+    noThread++;
+	pthread_mutex_unlock(&mutex);
     cout << "\nClosing thread and conn" << endl;
     close(myConnFd);
 
