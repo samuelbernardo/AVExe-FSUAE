@@ -185,12 +185,14 @@ void *task1 (void *dummyPt)
     pthread_mutex_unlock(&mutex);
 
     memPDU memoryBank;
+    int op;
     int checker;
 
     cout << "Thread No: " << pthread_self() << endl;
     cout << "MyThread No: " << myThread << endl;
+    cout << "myConnFd No: " << myConnFd << endl;
 
-	checker = read(myConnFd, (int*)&memoryBank.op, sizeof(int));
+	checker = read(myConnFd, (int*)&op, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "server readServer: read error in op!" << endl;
