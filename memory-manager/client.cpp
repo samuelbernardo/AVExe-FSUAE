@@ -17,6 +17,7 @@
 #include <time.h>
 #include <vector>
 #include <cstdlib>
+#include <stdint.h>
 #include "client.h"
 
 using namespace std;
@@ -54,7 +55,7 @@ void startConnection() {
 }
 
 void writeServer(uaecptr addr, uae_u32 data) {
-
+	int checker;
 	/*
 	 * Verify if connection to server is already started
 	 */
@@ -70,11 +71,35 @@ void writeServer(uaecptr addr, uae_u32 data) {
 	memoryBank.addr = addr;
 	memoryBank.data = data;
 
-	write(listenFd, &memoryBank, sizeof(memPDU));
+	checker = write(listenFd, &memoryBank.op, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client writeServer: write error in op!" << endl;
+		exit(checker);
+	}
+	checker = write(listenFd, &memoryBank.id, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client writeServer: write error in id!" << endl;
+		exit(checker);
+	}
+	checker = write(listenFd, &memoryBank.addr, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client writeServer: write error in addr!" << endl;
+		exit(checker);
+	}
+	checker = write(listenFd, &memoryBank.data, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client writeServer: write error in data!" << endl;
+		exit(checker);
+	}
 
 }
 
 uae_u32 readServer(uaecptr addr){
+	int checker;
 	/*
 	 * Verify if connection to server is already started
 	 */
@@ -90,9 +115,31 @@ uae_u32 readServer(uaecptr addr){
 	memoryBank.addr = addr;
 	memoryBank.data = 0;
 
-	write(listenFd, &memoryBank, sizeof(memPDU));
+	checker = write(listenFd, &memoryBank.op, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client readServer: write error in op!" << endl;
+		exit(checker);
+	}
+	checker = write(listenFd, &memoryBank.id, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client readServer: write error in id!" << endl;
+		exit(checker);
+	}
+	checker = write(listenFd, &memoryBank.addr, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client readServer: write error in addr!" << endl;
+		exit(checker);
+	}
 
-	read(listenFd, &memoryBank, sizeof(memPDU));
+	checker = read(listenFd, (int*)&memoryBank.data, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "client readServer: read error in data!" << endl;
+		exit(checker);
+	}
 
 	return memoryBank.data;
 }

@@ -22,6 +22,7 @@
 #include <errno.h>
 #include <signal.h>
 #include <assert.h>
+#include <stdint.h>
 #include "server.h"
 
 using namespace std;
@@ -137,7 +138,7 @@ int main(int argc, char* argv[])
 	float access_ratio = ((float)memSize)/((float)allRequests);
 
 	ofstream logFile;
-	logFile.open("log.txt");
+	logFile.open(SERVERLOG);
 #ifdef __MEMORY_DEDUPLICATION__
 	logFile << "dedupMemoryStorage: unordered_map<memoryID,uae_u32*,memIDhash,memIDeqKey> deduplicated_database_type" << endl;
 	for (deduplicated_database_iterator iter = memoryStorage.dedupMemoryStorageBeginIterator(); iter != memoryStorage.dedupMemoryStorageEndIterator(); iter++) {
@@ -184,17 +185,46 @@ void *task1 (void *dummyPt)
     pthread_mutex_unlock(&mutex);
 
     memPDU memoryBank;
+    int checker;
 
     cout << "Thread No: " << pthread_self() << endl;
     cout << "MyThread No: " << myThread << endl;
 
-	read(myConnFd, &memoryBank, sizeof(memPDU));
+	checker = read(myConnFd, (int*)&memoryBank.op, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "server readServer: read error in op!" << endl;
+		exit(checker);
+	}
+	checker = read(myConnFd, (int*)&memoryBank.id, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "server readServer: read error in id!" << endl;
+		exit(checker);
+	}
+	checker = read(myConnFd, (int*)&memoryBank.addr, sizeof(int));
+	if (checker < 0)
+	{
+		cerr << "server readServer: read error in addr!" << endl;
+		exit(checker);
+	}
 
 	if(memoryBank.op == MEMSERVER_READ) {
 		memoryBank.data = memoryStorage.getMemoryData(memoryBank.addr, memoryBank.id);
-		write(myConnFd, &memoryBank, sizeof(memPDU));
+		checker = write(myConnFd, &memoryBank.data, sizeof(int));
+		if (checker < 0)
+		{
+			cerr << "server readServer: write error in data!" << endl;
+			exit(checker);
+		}
 	}
 	else {
+		checker = read(myConnFd, (int*)&memoryBank.data, sizeof(int));
+		if (checker < 0)
+		{
+			cerr << "server readServer: read error in data!" << endl;
+			exit(checker);
+		}
 		memoryStorage.putMemoryData(memoryBank.addr, memoryBank.id, memoryBank.data);
 	}
 

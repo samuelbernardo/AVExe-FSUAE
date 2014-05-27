@@ -9,6 +9,8 @@
 #define TRUE  1
 #define FALSE 0
 
+#define SERVERLOG "/tmp/server-log.txt"
+
 int socket_option_z;     /* Status code */
 int so_reuseaddr = TRUE;
 

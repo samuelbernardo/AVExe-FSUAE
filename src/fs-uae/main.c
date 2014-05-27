@@ -1134,6 +1134,8 @@ int main(int argc, char* argv[]) {
     fs_uae_configure_menu();
 
     fs_emu_run(main_function);
+    //TODO: fechar a porta aberta para o cliente de modo a não dar segfault no servidor. Necessário fazer include do client.h para ter referência para a socket.
+
     fs_log("fs-uae shutting down, fs_emu_run returned\n");
     if (fs_rmdir(fs_uae_state_dir()) == 0) {
         fs_log("state dir %s was removed because it was empty\n",
