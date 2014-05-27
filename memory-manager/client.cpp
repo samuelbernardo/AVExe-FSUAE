@@ -35,7 +35,7 @@ void startConnection() {
 
 	if(listenFd < 0)
 	{
-		cerr << "Cannot open socket" << endl;
+		cerr << "Client: Cannot open socket! Socket number is " << listenFd << endl;
 		return;
 	}
 
@@ -48,7 +48,7 @@ void startConnection() {
 
 	if (checker < 0)
 	{
-		cerr << "Cannot connect!" << endl;
+		cerr << "Client: Cannot connect! Socket number is " << listenFd << endl;
 		return;
 	}
 
