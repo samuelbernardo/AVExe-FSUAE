@@ -194,19 +194,19 @@ void *task1 (void *dummyPt)
     cout << "MyThread No: " << myThread << endl;
     cout << "myConnFd No: " << myConnFd << endl;
 
-	checker = read(myConnFd, (int*)&op, sizeof(int));
+	checker = read(myConnFd, &op, sizeof(int));
 	if (checker < 0)
 	{
-		cerr << "server readServer: read error in op!" << endl;
+		cerr << "server readServer: read error in op! op =" << op << endl;
 		exit(checker);
 	}
-	checker = read(myConnFd, (int*)&id, sizeof(int));
+	checker = read(myConnFd, &id, sizeof(int));
 	if (checker < 0)
 	{
 		cerr << "server readServer: read error in id!" << endl;
 		exit(checker);
 	}
-	checker = read(myConnFd, (int*)&addr, sizeof(int));
+	checker = read(myConnFd, &addr, sizeof(uaecptr));
 	if (checker < 0)
 	{
 		cerr << "server readServer: read error in addr!" << endl;
@@ -215,7 +215,7 @@ void *task1 (void *dummyPt)
 
 	if(op == MEMSERVER_READ) {
 		data = memoryStorage.getMemoryData(addr, id);
-		checker = write(myConnFd, &data, sizeof(int));
+		checker = write(myConnFd, &data, sizeof(uae_u32));
 		if (checker < 0)
 		{
 			cerr << "server readServer: write error in data!" << endl;
@@ -223,7 +223,7 @@ void *task1 (void *dummyPt)
 		}
 	}
 	else {
-		checker = read(myConnFd, (int*)&data, sizeof(int));
+		checker = read(myConnFd, &data, sizeof(uae_u32));
 		if (checker < 0)
 		{
 			cerr << "server readServer: read error in data!" << endl;
